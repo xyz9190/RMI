@@ -1,0 +1,15 @@
+1st Terminal:
+
+1. javac *.java
+
+2. rmic AddImpl
+
+3.rmiregistry
+
+2nd Terminal:
+
+java Server
+
+3rd Terminal:
+
+java Client
