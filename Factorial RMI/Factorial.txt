@@ -1,0 +1,102 @@
+Factorial.java
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface Factorial extends Remote {
+    long calculateFactorial(int number) throws RemoteException;
+}
+
+
+
+
+FactorialImpl.java
+
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+public class FactorialImpl extends UnicastRemoteObject implements Factorial {
+    public FactorialImpl() throws RemoteException {
+        super();
+    }
+
+    public long calculateFactorial(int number) throws RemoteException {
+        if (number < 0) {
+            throw new RemoteException("Factorial of negative numbers is not defined.");
+        }
+
+        long factorial = 1;
+        for (int i = 1; i <= number; i++) {
+            factorial *= i;
+        }
+        return factorial;
+    }
+}
+
+
+
+
+
+Server.java
+
+
+import java.rmi.Naming;
+
+public class Server {
+    public static void main(String[] args) {
+        try {
+            Factorial factorialObj = new FactorialImpl();
+            Naming.rebind("rmi://localhost/factorial", factorialObj);
+
+            System.out.println("Factorial Server Started");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+
+
+
+
+Client.java
+
+import java.rmi.Naming;
+import java.util.Scanner;
+
+public class Client {
+    public static void main(String[] args) {
+        try {
+            Scanner scanner = new Scanner(System.in);
+
+            // Obtain the RMI service
+            Factorial factorialService = (Factorial) Naming.lookup("rmi://localhost/factorial");
+
+            // Prompt user to enter a number for factorial computation
+            System.out.print("Enter a number to calculate factorial: ");
+            int number = scanner.nextInt();
+
+            // Calculate factorial using the RMI service
+            long factorialResult = factorialService.calculateFactorial(number);
+
+            // Display the result
+            System.out.println("Factorial of " + number + " is: " + factorialResult);
+
+            scanner.close(); // Close the scanner
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+
+
+
+javac Factorial.java FactorialImpl.java Server.java Client.java
+
+rmiregistry
+
+java Server
+
+java Client
+
+
+
